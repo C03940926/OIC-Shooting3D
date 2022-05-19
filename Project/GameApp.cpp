@@ -10,13 +10,21 @@
 //INCLUDE
 #include	"GameApp.h"
 #include	"Player.h"
+#include	"Stage.h"
 
 CPlayer		Player;
+
+Stage		gStage;
 
 CCamera		Camera;
 CDirectionalLight	Light;
 
 bool		gdDebug;
+
+CVector3		gCameraPos;
+CVector3		gTarPos;
+CVector3		gCameraUp;
+
 
 /*************************************************************************//*!
 		@brief			アプリケーションの初期化
@@ -28,6 +36,9 @@ bool		gdDebug;
 MofBool CGameApp::Initialize(void){
 	//リソース配置ディレクトリの設定
 	CUtilities::SetCurrentDirectory("Resource");
+	gCameraPos = Vector3(0, 6.0f, -17.0f);
+	gTarPos = Vector3(0, 0, -10);
+	gCameraUp = Vector3(0, 1, 0);
 
 	Camera.SetViewPort();
 	Camera.LookAt(Vector3(0, 6.0f, -17.0f), Vector3(0, 0, -10), Vector3(0, 1, 0));
@@ -42,6 +53,9 @@ MofBool CGameApp::Initialize(void){
 
 	Player.Load();
 	Player.Initialize();
+
+	gStage.Load();
+	gStage.Initialize();
 	
 	return TRUE;
 }
@@ -60,6 +74,8 @@ MofBool CGameApp::Update(void){
 
 	Player.Update();
 
+	gStage.Update();
+
 
 	if (g_pInput->IsKeyPush(MOFKEY_F1))
 	{
@@ -67,12 +83,13 @@ MofBool CGameApp::Update(void){
 	}
 
 	float posX = Player.GetPosition().x * 0.4f;
-	CVector3 cpos = Camera.GetViewPosition();
-	CVector3 tpos = Camera.GetTargetPosition();
-	CVector3 vup = CVector3(0, 1, 0);
-	cpos.x = posX;
-	tpos.x = posX;
-	Camera.LookAt(cpos, tpos, vup);
+	
+	gCameraPos.x = posX;
+	gTarPos.x = posX;
+
+	gCameraUp.RotationZ(Player.GetPosition().x / FIELD_HALF_X * MOF_ToRadian(0.01f));
+
+	Camera.LookAt(gCameraPos, gTarPos, gCameraUp);
 
 	Camera.Update();
 
@@ -95,6 +112,8 @@ MofBool CGameApp::Render(void){
 	g_pGraphics->SetDepthEnable(true);
 
 	Player.Render();
+
+	gStage.Render();
 
 
 	g_pGraphics->SetDepthEnable(false);
@@ -121,6 +140,8 @@ MofBool CGameApp::Render(void){
 MofBool CGameApp::Release(void){
 
 	Player.Release();
+
+	gStage.Relese();
 
 	return TRUE;
 }

@@ -6,7 +6,8 @@
 CPlayer::CPlayer() :
 m_Mesh(),
 m_Pos(0.0f,0.0f,0.0f),
-m_RotZ(0.0f){
+m_RotZ(0.0f),
+m_Speed(0.0f){
 }
 
 /**
@@ -34,6 +35,7 @@ void CPlayer::Initialize(void){
 
 	m_Pos = Vector3(0.0f, 0.0f, -FIELD_HALF_Z + 2.0f);
 	m_RotZ = 0;
+	m_Speed = 0.1f;
 }
 
 /**
@@ -42,23 +44,37 @@ void CPlayer::Initialize(void){
 void CPlayer::Update(void){
 	float Roll = 0;
 
+	if (g_pInput->IsKeyHold(MOFKEY_K))
+	{
+		m_Speed += 0.1f;
+	}
+	if (g_pInput->IsKeyHold(MOFKEY_L))
+	{
+		m_Speed -= 0.1f;
+	}
+	if (m_Speed<=0)
+	{
+		m_Speed = 0.1f;
+	}
+
+
 	if (g_pInput->IsKeyHold(MOFKEY_A))
 	{
-		m_Pos.x = max(m_Pos.x - PLAYER_SPEED, -FIELD_HALF_X);
+		m_Pos.x = max(m_Pos.x - m_Speed, -FIELD_HALF_X);
 		Roll -= MOF_MATH_PI;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_D))
 	{
-		m_Pos.x = min(m_Pos.x + PLAYER_SPEED, FIELD_HALF_X);
+		m_Pos.x = min(m_Pos.x + m_Speed, FIELD_HALF_X);
 		Roll += MOF_MATH_PI;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_W))
 	{
-		m_Pos.z = min(m_Pos.z + PLAYER_SPEED, FIELD_HALF_Z);
+		m_Pos.z = min(m_Pos.z + m_Speed, FIELD_HALF_Z);
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_S))
 	{
-		m_Pos.z = max(m_Pos.z - PLAYER_SPEED, -FIELD_HALF_Z);
+		m_Pos.z = max(m_Pos.z - m_Speed, -FIELD_HALF_Z);
 	}
 
 	
