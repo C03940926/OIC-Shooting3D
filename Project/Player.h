@@ -2,8 +2,13 @@
 
 #include "GameDefine.h"
 
+#include "PlayerShot.h"
+
 // ˆÚ“®‘¬“x
 #define PLAYER_SPEED		(0.1f)
+
+#define SHOT_COUNT			(40)
+#define SHOT_WAIT			(5)
 
 class CPlayer{
 private:
@@ -12,6 +17,12 @@ private:
 	float			m_RotZ;
 	float			m_Speed;
 	float			RotSpeed ;
+
+	CMeshContainer	m_ShotMesh;
+	CPlayerShot		m_ShotArray[SHOT_COUNT];
+	int				m_ShotWait;
+	int				m_Select;
+
 public:
 	CPlayer();
 	~CPlayer();
@@ -22,4 +33,9 @@ public:
 	void RenderDebugText();
 	const CVector3 GetPosition(){ return m_Pos; }
 	void Release();
+
+	
+	void UpdateSingle();
+	void UpdateDouble();
+	void UpdateTripple();
 };
