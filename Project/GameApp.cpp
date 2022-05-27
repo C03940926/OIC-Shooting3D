@@ -11,10 +11,14 @@
 #include	"GameApp.h"
 #include	"Player.h"
 #include	"Stage.h"
+#include	"Stage1.h"
 
 CPlayer		Player;
 
 Stage		gStage;
+
+#define		ENEMY_COUNT		(20)
+CEnemy		gEnemyArray[ENEMY_COUNT];
 
 CCamera		Camera;
 CDirectionalLight	Light;
@@ -55,8 +59,14 @@ MofBool CGameApp::Initialize(void){
 	Player.Initialize();
 
 	gStage.Load();
-	gStage.Initialize();
+	gStage.Initialize(&gStg1EnemyStart);
 	
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		gEnemyArray[i].Initialize();
+	}
+
+
 	return TRUE;
 }
 /*************************************************************************//*!
@@ -74,7 +84,12 @@ MofBool CGameApp::Update(void){
 
 	Player.Update();
 
-	gStage.Update();
+	gStage.Update(gEnemyArray, ENEMY_COUNT);
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		gEnemyArray[i].Update();
+	}
+
 
 
 	if (g_pInput->IsKeyPush(MOFKEY_F1))
@@ -114,6 +129,11 @@ MofBool CGameApp::Render(void){
 	Player.Render();
 
 	gStage.Render();
+
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		gEnemyArray[i].Render();
+	}
 
 
 	g_pGraphics->SetDepthEnable(false);

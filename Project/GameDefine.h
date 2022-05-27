@@ -9,8 +9,26 @@
 
 enum ShotMode
 {
-	SINGLE,
-	DOUBLE,
-	TRIPPLE
+	MODE_SINGLE,
+	MODE_DOUBLE,
+	MODE_TRIPPLE
 };
+
+enum EASING_TYPE {
+	EASE_LINEAR,
+	EASE_IN_SINE,
+	EASE_OUT_SINE,
+	EASE_INOUT_SINE,
+};
+
+
+struct ANIM_DATA
+{
+	float	Time;
+	float	Value;
+	EASING_TYPE	EasingType;
+};
+
+
+float	InterpolationAnim(float AnimTime, ANIM_DATA* AnimData, int cnt);
 

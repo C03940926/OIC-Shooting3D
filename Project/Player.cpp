@@ -50,7 +50,7 @@ void CPlayer::Initialize(void){
 	m_Pos = Vector3(0.0f, 0.0f, -FIELD_HALF_Z + 2.0f);
 	m_RotZ = 0;
 	m_Speed = 0.1f;
-	m_Select = SINGLE;
+	m_Select = MODE_SINGLE;
 	
 
 	for (int i = 0; i < SHOT_COUNT; i++)
@@ -122,13 +122,13 @@ void CPlayer::Update(void){
 	{
 		switch (m_Select)
 		{
-		case SINGLE:
+		case MODE_SINGLE:
 			UpdateSingle();
 			break;
-		case DOUBLE:
+		case MODE_DOUBLE:
 			UpdateDouble();
 			break;
-		case TRIPPLE:
+		case MODE_TRIPPLE:
 			UpdateTripple();
 			break;
 		}
