@@ -20,6 +20,10 @@ Stage		gStage;
 #define		ENEMY_COUNT		(20)
 CEnemy		gEnemyArray[ENEMY_COUNT];
 
+#define		ENEMYSHOT_COUNT	(200)
+CEnemyShot	gShotArray[ENEMYSHOT_COUNT];
+CMeshContainer	gEnemyShotMesh;
+
 CCamera		Camera;
 CDirectionalLight	Light;
 
@@ -66,6 +70,17 @@ MofBool CGameApp::Initialize(void){
 		gEnemyArray[i].Initialize();
 	}
 
+	if (!gEnemyShotMesh.Load("eshot.mom"))
+	{
+		return false;
+	}
+
+	for (int i = 0; i < ENEMYSHOT_COUNT; i++)
+	{
+		gShotArray[i].Initialize();
+		gShotArray[i].SetMesh(&gEnemyShotMesh);
+	}
+
 
 	return TRUE;
 }
@@ -87,7 +102,24 @@ MofBool CGameApp::Update(void){
 	gStage.Update(gEnemyArray, ENEMY_COUNT);
 	for (int i = 0; i < ENEMY_COUNT; i++)
 	{
-		gEnemyArray[i].Update();
+		gEnemyArray[i].SetTargetPos(Player.GetPosition());
+		gEnemyArray[i].Update(gShotArray,ENEMYSHOT_COUNT);
+	}
+
+	for (int i = 0; i < ENEMYSHOT_COUNT; i++)
+	{
+		gShotArray[i].Update();
+	}
+
+	for (int i = 0; i < ENEMYSHOT_COUNT; i++)
+	{
+		Player.ColisionEnemyShot(gShotArray[i]);
+	}
+
+
+	for (int i = 0; i < ENEMY_COUNT; i++)
+	{
+		Player.CollisionEnemy(gEnemyArray[i]);
 	}
 
 
@@ -96,6 +128,23 @@ MofBool CGameApp::Update(void){
 	{
 		gdDebug = ((gdDebug) ? false : true);
 	}
+
+
+	if (g_pInput->IsKeyPush(MOFKEY_RETURN)&&Player.IsDead())
+	{
+		Player.Initialize();
+		gStage.Initialize(&gStg1EnemyStart);
+		for (int i = 0; i < ENEMY_COUNT; i++)
+		{
+			gEnemyArray[i].Initialize();
+		}
+		for (int i = 0; i < ENEMYSHOT_COUNT; i++)
+		{
+			gShotArray[i].Initialize();
+		}
+	}
+
+
 
 	float posX = Player.GetPosition().x * 0.4f;
 	
@@ -135,6 +184,13 @@ MofBool CGameApp::Render(void){
 		gEnemyArray[i].Render();
 	}
 
+	for (int i = 0; i < ENEMYSHOT_COUNT; i++)
+	{
+		gShotArray[i].RenderDebug();
+	}
+
+
+
 
 	g_pGraphics->SetDepthEnable(false);
 
@@ -143,7 +199,10 @@ MofBool CGameApp::Render(void){
 		Player.RenderDebugText();
 	}
 
-
+	if (Player.IsDead())
+	{
+		CGraphicsUtilities::RenderString(240, 350, MOF_COLOR_RED, "ゲームオーバー：Enterキーでもう一度最初から");
+	}
 	
 
 	// 描画の終了
@@ -162,6 +221,7 @@ MofBool CGameApp::Release(void){
 	Player.Release();
 
 	gStage.Relese();
+	gEnemyShotMesh.Release();
 
 	return TRUE;
 }

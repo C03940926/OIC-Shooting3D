@@ -11,6 +11,7 @@ m_Speed(0.0f),
 m_ShotMesh(),
 m_ShotArray(),
 m_ShotWait(),
+m_bDead(false),
 m_Select(){
 }
 
@@ -51,6 +52,7 @@ void CPlayer::Initialize(void){
 	m_RotZ = 0;
 	m_Speed = 0.1f;
 	m_Select = MODE_SINGLE;
+	m_bDead = false;
 	
 
 	for (int i = 0; i < SHOT_COUNT; i++)
@@ -63,6 +65,13 @@ void CPlayer::Initialize(void){
  * XV
  */
 void CPlayer::Update(void){
+	if (m_bDead)
+	{
+		return;
+	}
+
+
+
 	float Roll = 0;
 
 	if (g_pInput->IsKeyHold(MOFKEY_K))
@@ -216,6 +225,50 @@ void CPlayer::UpdateTripple() {
 }
 
 
+void CPlayer::CollisionEnemy(CEnemy& ene) {
+	if (!ene.GetShow())
+	{
+		return;
+	}
+
+	CSphere ps = GetSphere();
+	CSphere es = ene.GetSphere();
+	if (ps.CollisionSphere(es))
+	{
+		m_bDead = true;
+	}
+
+	for (int i = 0; i < SHOT_COUNT; i++)
+	{
+		if (!m_ShotArray[i].GetShow()) continue;
+		CSphere ss = m_ShotArray[i].GetSphere();
+		if (ss.CollisionSphere(es))
+		{
+			ene.Damege(1);
+			m_ShotArray[i].SetShow(false);
+			break;
+		}
+	}
+
+}
+
+
+
+
+
+void CPlayer::ColisionEnemyShot(CEnemyShot& shot) {
+	CSphere ps = GetSphere();
+	if (!shot.GetShow())
+	{
+		return;
+	}
+	CSphere ss = shot.GetSphere();
+	if (ss.CollisionSphere(ps))
+	{
+		m_bDead = true;
+		shot.SetShow(false);
+	}
+}
 
 
 
@@ -226,6 +279,11 @@ void CPlayer::UpdateTripple() {
  * •`‰æ
  */
 void CPlayer::Render(void){
+	if (m_bDead)
+	{
+		return;
+	}
+
 	CMatrix44 matWorld;
 	matWorld.RotationZ(m_RotZ);
 	matWorld.SetTranslation(m_Pos);

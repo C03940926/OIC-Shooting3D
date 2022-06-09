@@ -4,6 +4,8 @@
 
 #include "PlayerShot.h"
 
+#include "Enemy.h"
+
 // ˆÚ“®‘¬“x
 #define PLAYER_SPEED		(0.1f)
 
@@ -17,6 +19,7 @@ private:
 	float			m_RotZ;
 	float			m_Speed;
 	float			RotSpeed ;
+	bool			m_bDead;
 
 	CMeshContainer	m_ShotMesh;
 	CPlayerShot		m_ShotArray[SHOT_COUNT];
@@ -33,6 +36,10 @@ public:
 	void RenderDebugText();
 	const CVector3 GetPosition(){ return m_Pos; }
 	void Release();
+	void CollisionEnemy(CEnemy& ene);
+	bool IsDead() { return m_bDead; }
+	CSphere GetSphere() { return CSphere(m_Pos, 0.4f); }
+	void ColisionEnemyShot(CEnemyShot& shot);
 
 	
 	void UpdateSingle();
